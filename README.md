@@ -1,1 +1,2 @@
-Case Study of Poisson's Equation
+# Poisson's Equation
+Case Study in NLA for MMSC
