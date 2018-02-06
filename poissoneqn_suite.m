@@ -5,11 +5,18 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 % to specify M and N (size of the grid), and input f (the RHS of Poisson's
 % equation), Then Au=f is solved using the simple finite difference scheme.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% general initialization %
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+solverIndex = 0;
+timingBoolean = 1;
+savePlotBoolean = 1;
+
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 1000;                    % number of intervals in x direction
-M = 1000;                    % number of intervals in y direction
+N = 50;                  % number of intervals in x direction
+M = 100;                  % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
     load(A_name);
@@ -32,9 +39,9 @@ f2vec = f2mat(:);                       % (N-1)(M-1) vector
 %%%%%%%%%%%%%%%%%%
 % numerical soln %
 %%%%%%%%%%%%%%%%%%
-[u1,t1] = solvers(A, f1vec, 1, 1);      % (M-1)(N-1) vector and avg run time
-u1mat = vec2mat(u1,N-1);                % (M-1)*(N-1) matrix
-[u2,t2] = solvers(A, f2vec, 1, 1);
+[u1,t1] = solvers(A, f1vec, solverIndex, timingBoolean);   % (M-1)(N-1) vector and avg run time
+u1mat = vec2mat(u1,N-1);                                   % (M-1)*(N-1) matrix
+[u2,t2] = solvers(A, f2vec, solverIndex, timingBoolean);
 u2mat = vec2mat(u2,N-1);
 
 %%%%%%%%%%%%%%
@@ -51,7 +58,7 @@ s2mat = s2(x,y);
 figure(1)
 subplot(3,1,1)    % plot the numerical solution
 s11 = surf(x,y,u1mat,'FaceAlpha',0.7); s11.EdgeColor = 'none';
-title(sprintf('Eqn1: M=%d, N=%d completed in %0.4f secs',M,N,t1)); 
+title(sprintf('Eqn1: M=%d, N=%d completed in %0.6f secs',M,N,t1));
 axis([0 1 0 1 -1 1]); colorbar;
 xlabel('x'); ylabel('y'); zlabel('numerical soln');
 subplot(3,1,2)    % plot the exact solution
@@ -61,12 +68,14 @@ xlabel('x'); ylabel('y'); zlabel('exact soln');
 subplot(3,1,3)    % plot the residual (numerical - exact)
 s13 = surf(x,y,u1mat-s1mat,'FaceAlpha',0.7); s13.EdgeColor = 'none';
 colorbar; xlabel('x'); ylabel('y'); zlabel('numerical - exact');
-print(sprintf('plots/Eqn1_bs_m%d_n%d.png', M, N),'-dpng');
+if savePlotBoolean
+    print(sprintf('plots/Eqn1_bs_m%d_n%d.png', M, N),'-dpng');
+end
 
 figure(2)
 subplot(3,1,1)
 s21 = surf(x,y,u2mat,'FaceAlpha',0.7); s21.EdgeColor = 'none';
-title(sprintf('Eqn2: M=%d, N=%d completed in %0.4f secs',M,N,t2)); 
+title(sprintf('Eqn2: M=%d, N=%d completed in %0.6f secs',M,N,t2));
 axis([0 1 0 1 -0.001 0.004]); colorbar;
 xlabel('x'); ylabel('y'); zlabel('numerical soln');
 xlabel('x'); ylabel('y'); zlabel('numerical soln');
@@ -77,4 +86,6 @@ xlabel('x'); ylabel('y'); zlabel('exact soln');
 subplot(3,1,3)
 s23 = surf(x,y,u2mat-s2mat,'FaceAlpha',0.7); s23.EdgeColor = 'none';
 colorbar; xlabel('x'); ylabel('y'); zlabel('numerical - exact');
-print(sprintf('plots/Eqn2_bs_m%d_n%d.png', M, N),'-dpng');
+if savePlotBoolean
+    print(sprintf('plots/Eqn2_bs_m%d_n%d.png', M, N),'-dpng');
+end
