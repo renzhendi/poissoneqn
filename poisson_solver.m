@@ -1,5 +1,6 @@
 clear
 clc
+addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 % This script solves general Poisson's equations numerically. It allows users
 % to specify M and N (size of the grid), and input f (the RHS of Poisson's
 % equation), Then Au=f is solved using the simple finite difference scheme.
@@ -7,22 +8,20 @@ clc
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 200;                                                 % x, number of intervals in discretization
-M = 100;                                                 % y, number of intervals
-h1 = 1/N;                                                % x, interval size
-h2 = 1/M;                                                % y, interval size
-diag0 = ones(N-1,1)*2*(h1^2+h2^2)/(h1^2*h2^2);           % trivial step in constructing B
-diag1 = -ones(N-1,1)/(h1^2);
-B = spdiags([diag1, diag0, diag1], -1:1, N-1, N-1);      % block B, (N-1)*(N-1) matrix
-C = -speye(N-1)/(h2^2);                                  % block C, (N-1)*(N-1) matrix
-mat_cells = {B,C,zeros(N-1)};                            % trivial step in constructing A
-A = cell2mat(mat_cells(toeplitz([1,2,ones(1,M-3)*3])));  % mat A, (M-1)(N-1)*(M-1)(N-1) matrix
+N = 1000;                    % number of intervals in x direction
+M = 1000;                    % number of intervals in y direction
+A_name = sprintf('matA_m%d_n%d.mat',M,N);
+if exist(A_name,'file') == 2
+    load(A_name);
+else
+    A = createA(M,N);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%
 % RHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-x = (1:N-1)*h1;                          % horizontal axis
-y = ((1:M-1)*h2)';                       % vertical axis
+x = (1:N-1)/N;                          % horizontal axis
+y = ((1:M-1)/M)';                       % vertical axis
 f1=@(x,y)13*pi^2*sin(2*pi*x).*sin(3*pi*y);
 f1mat = f1(x,y)';                        % (N-1)*(M-1) matrix
 f1vec = f1mat(:);                        % (N-1)(M-1) vector
@@ -66,7 +65,7 @@ xlabel('x'); ylabel('y'); zlabel('exact soln');
 subplot(3,1,3)    % plot the residual (numerical - exact)
 s13 = surf(x,y,u1mat-s1mat,'FaceAlpha',0.7); s13.EdgeColor = 'none';
 colorbar; xlabel('x'); ylabel('y'); zlabel('numerical - exact');
-print(sprintf('Eqn1_bs_m%d_n%d.png', M, N),'-dpng');
+print(sprintf('plots/Eqn1_bs_m%d_n%d.png', M, N),'-dpng');
 
 figure(2)
 subplot(3,1,1)
@@ -82,4 +81,4 @@ xlabel('x'); ylabel('y'); zlabel('exact soln');
 subplot(3,1,3)
 s23 = surf(x,y,u2mat-s2mat,'FaceAlpha',0.7); s23.EdgeColor = 'none';
 colorbar; xlabel('x'); ylabel('y'); zlabel('numerical - exact');
-print(sprintf('Eqn2_bs_m%d_n%d.png', M, N),'-dpng');
+print(sprintf('plots/Eqn2_bs_m%d_n%d.png', M, N),'-dpng');
