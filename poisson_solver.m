@@ -23,23 +23,19 @@ end
 x = (1:N-1)/N;                          % horizontal axis
 y = ((1:M-1)/M)';                       % vertical axis
 f1=@(x,y)13*pi^2*sin(2*pi*x).*sin(3*pi*y);
-f1mat = f1(x,y)';                        % (N-1)*(M-1) matrix
-f1vec = f1mat(:);                        % (N-1)(M-1) vector
+f1mat = f1(x,y)';                       % (N-1)*(M-1) matrix
+f1vec = f1mat(:);                       % (N-1)(M-1) vector
 f2=@(x,y)-(x-1).^3.*(42*x.^2-24*x+2).*y.*(y-1)-2*x.^2.*(x-1).^5;
-f2mat = f2(x,y)';                        % (N-1)*(M-1) matrix
-f2vec = f2mat(:);                        % (N-1)(M-1) vector
+f2mat = f2(x,y)';                       % (N-1)*(M-1) matrix
+f2vec = f2mat(:);                       % (N-1)(M-1) vector
 
 %%%%%%%%%%%%%%%%%%
 % numerical soln %
 %%%%%%%%%%%%%%%%%%
-tic;
-u1 = A\f1vec;                % backslash solver (Gaussian)
-u1mat = vec2mat(u1,N-1);     % (M-1)*(N-1) matrix
-t1 = toc;
-tic;
-u2 = A\f2vec;
+[u1,t1] = solvers(A, f1vec, 1, 1);      % (M-1)(N-1) vector and avg run time
+u1mat = vec2mat(u1,N-1);                % (M-1)*(N-1) matrix
+[u2,t2] = solvers(A, f2vec, 1, 1);
 u2mat = vec2mat(u2,N-1);
-t2 = toc;
 
 %%%%%%%%%%%%%%
 % exact soln %
