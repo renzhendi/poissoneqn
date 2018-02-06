@@ -1,4 +1,4 @@
-function u = laplaceSolver(N,M,RHS)
+function [u,exsol] = laplaceSolver(N,M,RHS,exsolfun)
 % function that solves poisson equation using multigrid method and 
 % backslash given a RHS function
 
@@ -19,6 +19,9 @@ x=(1:N-1)*hx;
 y=(1:M-1)*hy;
 
 [X,Y]=meshgrid(x,y);
+
+exsol=zeros(N+1,M+1);
+exsol(2:N,2:M)=exsolfun(X,Y)';
 
 f=RHS(X,Y)';
 fvec=reshape(f,(N-1)*(M-1),1); 
