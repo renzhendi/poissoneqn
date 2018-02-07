@@ -1,5 +1,6 @@
 clear
 clc
+rng('shuffle')
 addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 % This script solves general Poisson's equations numerically. It allows users
 % to specify M and N (size of the grid), and input f (the RHS of Poisson's
@@ -8,15 +9,17 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-solverIndex = 0;
-timingBoolean = 1;
-savePlotBoolean = 1;
+solverIndex = 1;
+timingBoolean = 0;
+initGuessType = 2;
+relaxation = 1;
+savePlotBoolean = timingBoolean;
 
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 50;                  % number of intervals in x direction
-M = 100;                  % number of intervals in y direction
+N = 100;                  % number of intervals in x direction
+M = 50;                  % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
     load(A_name);
@@ -39,9 +42,9 @@ f2vec = f2mat(:);                       % (N-1)(M-1) vector
 %%%%%%%%%%%%%%%%%%
 % numerical soln %
 %%%%%%%%%%%%%%%%%%
-[u1,t1] = solvers(A, f1vec, solverIndex, timingBoolean);   % (M-1)(N-1) vector and avg run time
+[u1,t1,iter1,errs1] = solvers(A, f1vec, solverIndex, timingBoolean, initGuessType, relaxation);   % (M-1)(N-1) vector and avg run time
 u1mat = vec2mat(u1,N-1);                                   % (M-1)*(N-1) matrix
-[u2,t2] = solvers(A, f2vec, solverIndex, timingBoolean);
+[u2,t2,iter2,errs2] = solvers(A, f2vec, solverIndex, timingBoolean, initGuessType, relaxation);
 u2mat = vec2mat(u2,N-1);
 
 %%%%%%%%%%%%%%
