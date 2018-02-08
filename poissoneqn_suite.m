@@ -1,5 +1,4 @@
 clear
-clc
 rng('shuffle')
 addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 % This script solves general Poisson's equations numerically. It allows users
@@ -9,16 +8,34 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-solverIndex = 1;
-timingBoolean = 0;
+solverIndex = 2;
+timingBoolean = 1;
 initGuessType = 2;
 relaxation = 1;
-savePlotBoolean = timingBoolean;
+savePlotBoolean = 0;
+switch solverIndex
+    case 0
+        algName = 'backslash';
+    case 1
+        if relaxation == 1
+            algName = 'Jacobi';
+        else
+            algName = sprintf('rJCB%0.1f',relaxation);
+        end
+    case 2
+        if relaxation == 1
+            algName = 'GaussSeidel';
+        else
+            algName = sprintf('SOR%0.1f',relaxation);
+        end
+    case 3
+        algName = sprintf('SSOR%0.1f',relaxation);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 100;                  % number of intervals in x direction
+N = 50;                  % number of intervals in x direction
 M = 50;                  % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
@@ -61,7 +78,7 @@ s2mat = s2(x,y);
 figure(1)
 subplot(3,1,1)    % plot the numerical solution
 s11 = surf(x,y,u1mat,'FaceAlpha',0.7); s11.EdgeColor = 'none';
-title(sprintf('Eqn1: M=%d, N=%d completed in %0.6f secs',M,N,t1));
+title(sprintf('Eqn1(%s): M=%d, N=%d completed in %0.6f secs',algName,M,N,t1));
 axis([0 1 0 1 -1 1]); colorbar;
 xlabel('x'); ylabel('y'); zlabel('numerical soln');
 subplot(3,1,2)    % plot the exact solution
@@ -72,13 +89,13 @@ subplot(3,1,3)    % plot the residual (numerical - exact)
 s13 = surf(x,y,u1mat-s1mat,'FaceAlpha',0.7); s13.EdgeColor = 'none';
 colorbar; xlabel('x'); ylabel('y'); zlabel('numerical - exact');
 if savePlotBoolean
-    print(sprintf('plots/Eqn1_bs_m%d_n%d.png', M, N),'-dpng');
+    print(sprintf('plots/Eqn1_%s_m%d_n%d.png',algName,M,N),'-dpng');
 end
 
 figure(2)
 subplot(3,1,1)
 s21 = surf(x,y,u2mat,'FaceAlpha',0.7); s21.EdgeColor = 'none';
-title(sprintf('Eqn2: M=%d, N=%d completed in %0.6f secs',M,N,t2));
+title(sprintf('Eqn2(%s): M=%d, N=%d completed in %0.6f secs',algName,M,N,t2));
 axis([0 1 0 1 -0.001 0.004]); colorbar;
 xlabel('x'); ylabel('y'); zlabel('numerical soln');
 xlabel('x'); ylabel('y'); zlabel('numerical soln');
@@ -90,5 +107,5 @@ subplot(3,1,3)
 s23 = surf(x,y,u2mat-s2mat,'FaceAlpha',0.7); s23.EdgeColor = 'none';
 colorbar; xlabel('x'); ylabel('y'); zlabel('numerical - exact');
 if savePlotBoolean
-    print(sprintf('plots/Eqn2_bs_m%d_n%d.png', M, N),'-dpng');
+    print(sprintf('plots/Eqn2_%s_m%d_n%d.png',algName,M, N),'-dpng');
 end

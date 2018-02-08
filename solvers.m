@@ -59,7 +59,11 @@ if timingBoolean                               % launch timer
                 tvec(i) = toc;
             end
         case 2
-            error('G-S/SOR to be implemented');
+            tic;
+            for i = 1:10
+                [u,iter,errs] = gaussseidel(A, f, u0, uexact, relaxation);
+                tvec(i) = toc;
+            end
         case 3
             error('SSOR to be implemented');
     end
@@ -75,7 +79,7 @@ else                                           % otherwise no timing
         case 1
             [u,iter,errs] = jacobi(A, f, u0, uexact, relaxation);
         case 2
-            error('G-S/SOR to be implemented');
+            [u,iter,errs] = gaussseidel(A, f, u0, uexact, relaxation);
         case 3
             error('SSOR to be implemented');
     end
