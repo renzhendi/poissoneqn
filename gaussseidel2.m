@@ -1,7 +1,9 @@
 % This function solves Au=f using Gauss-Seidel/SOR method and returns u,
 % number of iterations and 2-norm errors.
+%
+% Component-wise implementation.
 
-function [u,iter,errs] = gaussseidel(A, f, u0, uexact, omega, tol)
+function [u,iter,errs] = gaussseidel2(A, f, u0, uexact, omega, tol)
 
 if omega == 1
     M = tril(A);                          % M = D+L
@@ -19,7 +21,7 @@ err = norm(u0 - uexact);
 errs(1) = err;
 
 while iter < 50000 && err > tol
-    u = M\(N*u + f);
+    u = fsub(M, (N*u + f));
     err = norm(u - uexact);
     iter = iter + 1;
     errs(iter) = err;

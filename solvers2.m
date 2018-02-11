@@ -1,5 +1,7 @@
 % This function solves Au=f and returns u, run time, and number of iterations.
 %
+% Component-wise implementation.
+%
 % solverIndex:
 % 0 - backslash '\'
 % 1 - Jacobi and relaxed Jacobi
@@ -15,7 +17,7 @@
 % 1 - ones
 % 2 - rand
 
-function [u,t,iter,errs] = solvers(A, f, solverIndex, timingBoolean, initGuessType, relaxation, tol)
+function [u,t,iter,errs] = solvers2(A, f, solverIndex, timingBoolean, initGuessType, relaxation, tol)
 
 if nargin < 7
     tol = 10^(-8);
@@ -58,19 +60,19 @@ if timingBoolean                               % launch timer
         case 1                                 % Jacobi
             tic;
             for i = 1:10
-                [u,iter,errs] = jacobi(A, f, u0, uexact, relaxation, tol);
+                [u,iter,errs] = jacobi2(A, f, u0, uexact, relaxation, tol);
                 tvec(i) = toc;
             end
         case 2
             tic;
             for i = 1:10
-                [u,iter,errs] = gaussseidel(A, f, u0, uexact, relaxation, tol);
+                [u,iter,errs] = gaussseidel2(A, f, u0, uexact, relaxation, tol);
                 tvec(i) = toc;
             end
         case 3
             tic;
             for i = 1:10
-                [u,iter,errs] = ssor(A, f, u0, uexact, relaxation, tol);
+                [u,iter,errs] = ssor2(A, f, u0, uexact, relaxation, tol);
                 tvec(i) = toc;
             end
     end
@@ -84,10 +86,10 @@ else                                           % otherwise no timing
             iter = 1;
             errs = 0;
         case 1
-            [u,iter,errs] = jacobi(A, f, u0, uexact, relaxation, tol);
+            [u,iter,errs] = jacobi2(A, f, u0, uexact, relaxation, tol);
         case 2
-            [u,iter,errs] = gaussseidel(A, f, u0, uexact, relaxation, tol);
+            [u,iter,errs] = gaussseidel2(A, f, u0, uexact, relaxation, tol);
         case 3
-            [u,iter,errs] = ssor(A, f, u0, uexact, relaxation, tol);
+            [u,iter,errs] = ssor2(A, f, u0, uexact, relaxation, tol);
     end
 end
