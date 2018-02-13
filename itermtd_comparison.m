@@ -1,15 +1,14 @@
 clear
 rng('shuffle')
 addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
-% This script solves general Poisson's equations numerically. It allows users
-% to specify M and N (size of the grid), and input f (the RHS of Poisson's
-% equation), Then Au=f is solved using the simple finite difference scheme.
+% This script compares 5 iterative methods (Jacobi, relaxed Jacobi, G-S, SOR,
+% SSOR) when solving the discretized Poisson's equation system Au=f.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-timingBoolean = 1;
-savePlotBoolean = 1;
+timingBoolean = 0;
+savePlotBoolean = 0;
 tol = 10^(-8);
 
 f1=@(x,y)13*pi^2*sin(2*pi*x).*sin(3*pi*y);

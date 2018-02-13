@@ -15,7 +15,7 @@
 % 1 - ones
 % 2 - rand
 
-function [u,t,iter,errs] = solvers(A, f, solverIndex, timingBoolean, initGuessType, relaxation, tol)
+function [u,t,iter,errs,M,N] = solvers(A, f, solverIndex, timingBoolean, initGuessType, relaxation, tol)
 
 if nargin < 7
     tol = 10^(-8);
@@ -84,10 +84,10 @@ else                                           % otherwise no timing
             iter = 1;
             errs = 0;
         case 1
-            [u,iter,errs] = jacobi(A, f, u0, uexact, relaxation, tol);
+            [u,iter,errs,M,N] = jacobi(A, f, u0, uexact, relaxation, tol);
         case 2
-            [u,iter,errs] = gaussseidel(A, f, u0, uexact, relaxation, tol);
+            [u,iter,errs,M,N] = gaussseidel(A, f, u0, uexact, relaxation, tol);
         case 3
-            [u,iter,errs] = ssor(A, f, u0, uexact, relaxation, tol);
+            [u,iter,errs,M,N] = ssor(A, f, u0, uexact, relaxation, tol);
     end
 end

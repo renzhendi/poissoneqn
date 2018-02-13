@@ -1,7 +1,7 @@
 % This function solves Au=f using (regular/relaxed) Jacobi's method returns
 % u, number of iterations and 2-norm errors.
 
-function [u,iter,errs] = jacobi(A, f, u0, uexact, theta, tol)
+function [u,iter,errs,M,N] = jacobi(A, f, u0, uexact, theta, tol)
 
 M = diag(diag(A));                   % M = D
 

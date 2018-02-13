@@ -1,7 +1,7 @@
 % This function solves Au=f using Gauss-Seidel/SOR method and returns u,
 % number of iterations and 2-norm errors.
 
-function [u,iter,errs] = gaussseidel(A, f, u0, uexact, omega, tol)
+function [u,iter,errs,M,N] = gaussseidel(A, f, u0, uexact, omega, tol)
 
 if omega == 1
     M = tril(A);                          % M = D+L

@@ -1,7 +1,7 @@
 % This function solves Au=f using SSOR method and returns u,number of
 % iterations and 2-norm errors.
 
-function [u,iter,errs] = ssor(A, f, u0, uexact, omega, tol)
+function [u,iter,errs,M,N] = ssor(A, f, u0, uexact, omega, tol)
 
 f = omega*f;
 D = diag(diag(A));
@@ -11,6 +11,8 @@ M1 = D + omega*L;               % at n+1/2: D+wL
 N1 = M1 - omega*A;              % (1-w)D-wR
 M2 = D + omega*R;               % at n+1: D+wR
 N2 = M2 - omega*A;              % (1-w)D-wL
+M = M1*M2/(omega*(2-omega)*A(1,1));
+N = M - A;
 
 errs = zeros(1,1);
 iter = 1;
