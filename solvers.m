@@ -73,6 +73,12 @@ if timingBoolean                               % launch timer
                 [u,iter,errs] = ssor(A, f, u0, uexact, relaxation, tol);
                 tvec(i) = toc;
             end
+        case 4
+            tic;
+            for i = 1:10
+                [u,iter,errs] = cg(A, f, u0, uexact, relaxation, tol);
+                tvec(i) = toc;
+            end
     end
     tvec(2:10) = tvec(2:10) - tvec(1:9);       % break down cumulative time
     t = (sum(tvec) - max(tvec) - min(tvec))/8; % avg time excluding max and min

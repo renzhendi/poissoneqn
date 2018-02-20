@@ -1,5 +1,5 @@
-% This function solves Au=f using Gauss-Seidel/SOR method and returns u,
-% number of iterations and 2-norm errors.
+% This function solves Au=f using Gauss-Seidel/SOR method, and returns u,
+% number of iterations, 2-norm errors, and splitted matrices.
 
 function [u,iter,errs,M,N] = gaussseidel(A, f, u0, uexact, omega, tol)
 

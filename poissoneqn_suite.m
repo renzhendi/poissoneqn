@@ -8,7 +8,9 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-solverIndex = 3;
+N = 33;                      % number of intervals in x direction
+M = 33;                      % number of intervals in y direction
+solverIndex = 5;
 timingBoolean = 0;
 initGuessType = 2;
 relaxation = 1;
@@ -31,18 +33,20 @@ switch solverIndex
         end
     case 3
         algName = sprintf('SSOR(%0.1f)',relaxation);
+    case 4
+        algName = 'CG';
+    case 5
+        algName = 'Multigrid';
 end
 
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 50;                      % number of intervals in x direction
-M = 50;                      % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
     load(A_name);
 else
-    A = createA(M,N);
+    A = createA(M,N);        % (M-1)(N-1)*(M-1)(N-1) matrix
 end
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -60,10 +64,34 @@ f2vec = f2mat(:);                       % (N-1)(M-1) vector
 %%%%%%%%%%%%%%%%%%
 % numerical soln %
 %%%%%%%%%%%%%%%%%%
-[u1,t1,iter1,errs1] = solvers(A, f1vec, solverIndex, timingBoolean, initGuessType, relaxation, tol);   % (M-1)(N-1) vector and avg run time
-u1mat = vec2mat(u1,N-1);                                                                               % (M-1)*(N-1) matrix
-[u2,t2,iter2,errs2] = solvers(A, f2vec, solverIndex, timingBoolean, initGuessType, relaxation, tol);
-u2mat = vec2mat(u2,N-1);
+if solverIndex < 4         % splitting methods
+    [u1,t1,iter1,errs1] = solvers(A, f1vec, solverIndex, timingBoolean, initGuessType, relaxation, tol);   % (M-1)(N-1) vector and avg run time
+    u1mat = vec2mat(u1,N-1);                                                                               % (M-1)*(N-1) matrix
+    [u2,t2,iter2,errs2] = solvers(A, f2vec, solverIndex, timingBoolean, initGuessType, relaxation, tol);
+    u2mat = vec2mat(u2,N-1);
+elseif solverIndex == 4    % conjugate gradient
+    x0 = zeros(size(f1vec));
+    tic
+    [u1,iter1,errs1] = cg(A, f1vec, x0, A\f1vec, tol);   % (M-1)(N-1) vector and avg run time
+    t1 = toc;
+    u1mat = vec2mat(u1,N-1);                             % (M-1)*(N-1) matrix
+    tic
+    [u2,iter2,errs2] = cg(A, f2vec, x0, A\f2vec, tol);
+    t2 = toc;
+    u2mat = vec2mat(u2,N-1);
+elseif solverIndex == 5    % multi-grid
+    x0 = zeros(size(f1vec));
+    tic
+    [u1,iter1,errs1] = multigrid(A, f1vec, x0, A\f1vec, tol);   % (M-1)(N-1) vector and avg run time
+    t1 = toc;
+    u1mat = vec2mat(u1,N-1);                             % (M-1)*(N-1) matrix
+    tic
+    [u2,iter2,errs2] = multigrid(A, f2vec, x0, A\f2vec, tol);
+    t2 = toc;
+    u2mat = vec2mat(u2,N-1);
+else
+    error('SolverIndex cannot exceed 5.');
+end
 
 %%%%%%%%%%%%%%
 % exact soln %

@@ -1,5 +1,5 @@
-% This function solves Au=f using (regular/relaxed) Jacobi's method returns
-% u, number of iterations and 2-norm errors.
+% This function solves Au=f using (regular/relaxed) Jacobi's method, and
+% returns u, number of iterations, 2-norm errors, and splitted matrices.
 
 function [u,iter,errs,M,N] = jacobi(A, f, u0, uexact, theta, tol)
 
