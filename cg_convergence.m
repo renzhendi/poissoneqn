@@ -9,7 +9,7 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 solverIndex = 4;             % input 1, 2, 3 only
 % timingBoolean is 0 by default
-initGuessType = 1;
+initGuessType = 0;
 relaxation = 1.5;
 tol = 10^(-8);
 savePlotBoolean = 0;
@@ -39,8 +39,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 50;                      % number of intervals in x direction
-M = 50;                      % number of intervals in y direction
+N = 200;                      % number of intervals in x direction
+M = 200;                      % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
     load(A_name);
@@ -64,9 +64,9 @@ f2vec = f2mat(:);                       % (N-1)(M-1) vector
 % numerical soln %
 %%%%%%%%%%%%%%%%%%
 x0 = zeros(size(f1vec));
-[u1,iter1,errs1,errsA1,res1] = cgerrs(A, f1vec, x0, A\f1vec, tol);   % (M-1)(N-1) vector and avg run time
-iter1_vec = 0:iter1-1;                                               % recorded u0 in iter1
-[u2,iter2,errs2,errsA2,res2] = cgerrs(A, f2vec, x0, A\f2vec, tol);
+[u1,iter1,errs1,errsA1,res1] = cg_reserr(A, f1vec, x0, A\f1vec, tol);   % (M-1)(N-1) vector and avg run time
+iter1_vec = 0:iter1-1;                                                  % recorded u0 in iter1
+[u2,iter2,errs2,errsA2,res2] = cg_reserr(A, f2vec, x0, A\f2vec, tol);
 iter2_vec = 0:iter2-1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,15 +84,15 @@ errs2_bound = 2*errsA2(1)*((sqrt(k)-1)/(sqrt(k)+1)).^iter2_vec;
 %%%%%%%%%%%%%%%%
 figure
 subplot(2,1,1)
-plot(iter1_vec,errsA1(1:end));
+plot(iter1_vec,log(errsA1(1:end)));
 hold on
-plot(iter1_vec,errs1_bound)
+plot(iter1_vec,log(errs1_bound))
 title(sprintf('Eqn1 [%s, u%d]: M=%d, N=%d, iter=%d, kappa=%0.4f',algName,initGuessType,M,N,iter1,k));
 xlabel('iteration'); ylabel('A-norm(error)');
 subplot(2,1,2)
-plot(iter2_vec,errsA2(1:end));
+plot(iter2_vec,log(errsA2(1:end)));
 hold on
-plot(iter2_vec,errs2_bound)
+plot(iter2_vec,log(errs2_bound));
 title(sprintf('Eqn2 [%s, u%d]: M=%d, N=%d, iter=%d, kappa=%0.4f',algName,initGuessType,M,N,iter2,k));
 xlabel('iteration'); ylabel('A-norm(error)');
 if savePlotBoolean

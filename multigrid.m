@@ -3,32 +3,16 @@
 %
 % Note: the 2-norm err is computed on the fine grid.
 
-function [x,iter,errs] = multigrid(A, b, x0, xexact, tol)
+function [u,iter,res_vec] = multigrid(A, b, u0, tol)
 
-M = diag(diag(A));                   % M = D
-N = M - A;                       % N = -(L+R)
-
-errs = zeros(1,1);
+u = u0;
 iter = 1;
-x = x0;
+res = norm(b - A*u);
+res_vec(iter) = res;
 
-I = speye(size(A,1)/2);
-R = 0.5*kron(I,[1 1]);
-P = 2*R';
-Ac = R*A*P;
-
-r = b - A*x0;
-err = norm(x0 - xexact);
-errs(1) = err;
-
-while iter < 50000 && err > tol
-    rc = R*r;
-    ec = Ac\rc;     % should call multigrid recursively
-    e = P*ec;
-    x = x+e;
-    r = b - A*x;
-    err = norm(x - xexact);
-    
-    iter = iter + 1;
-    errs(iter) = err;
+while iter<10000 && res>tol
+    u = vcycle(A, b, u);
+    res = norm(b - A*u);
+    iter = iter+1;
+    res_vec(iter) = res;
 end

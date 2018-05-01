@@ -3,25 +3,27 @@
 %
 % Note: stopping criteria based on 2-norm err, not res.
 
-function [x,iter,errs] = cg(A, b, x0, xexact, tol)
+function [x,iter,res_vec] = cg(A, b, x0, tol)
 
-errs = zeros(1,1);
+res_vec = zeros(1,50000);
 iter = 1;
 x = x0;
 
 r = b - A*x0;
-err = norm(x0 - xexact);
-errs(1) = err;
+res = norm(r);
+res_vec(1) = res;
 p = r;
 
-while iter < 50000 && err > tol
+while iter < 50000 && res > tol
     alpha = (p'*r)/(p'*A*p);
     x = x + alpha*p;
     r = b - A*x;
     beta = -(p'*A*r)/(p'*A*p);
     p = r + beta*p;
-    err = norm(x - xexact);
+    res = norm(r);
     
     iter = iter + 1;
-    errs(iter) = err;
+    res_vec(iter) = res;
 end
+
+res_vec = res_vec(1:iter);

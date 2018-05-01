@@ -1,7 +1,7 @@
 % This function solves Au=f using SSOR method, and returns u,number of
 % iterations, 2-norm errors, and splitted matrices.
 
-function [u,iter,res_vec,M,N] = ssor(A, f, u0, omega, tol)
+function [u,iter,errs,M,N] = ssor_err(A, f, u0, uexact, omega, tol)
 
 f = omega*f;
 D = diag(diag(A));
@@ -14,16 +14,18 @@ N2 = M2 - omega*A;              % (1-w)D-wL
 M = M1*M2/(omega*(2-omega)*A(1,1));
 N = M - A;
 
-res_vec = zeros(1,1);
+errs = zeros(1,50000);
 iter = 1;
 u = u0;
-res = norm(f - A*u);
-res_vec(1) = res;
+err = norm(u0 - uexact);
+errs(1) = err;
 
-while iter < 50000 && res > tol
+while iter < 50000 && err > tol
     u = M1\(N1*u + f);
     u = M2\(N2*u + f);
-    res = norm(f - A*u);
+    err = norm(u - uexact);
     iter = iter + 1;
-    res_vec(iter) = res;
+    errs(iter) = err;
 end
+
+errs = errs(1:iter);

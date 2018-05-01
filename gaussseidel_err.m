@@ -1,7 +1,7 @@
 % This function solves Au=f using Gauss-Seidel/SOR method, and returns u,
 % number of iterations, 2-norm errors, and splitted matrices.
 
-function [u,iter,res_vec,M,N] = gaussseidel(A, f, u0, omega, tol)
+function [u,iter,errs,M,N] = gaussseidel_err(A, f, u0, uexact, omega, tol)
 
 if omega == 1
     M = tril(A);                          % M = D+L
@@ -12,17 +12,17 @@ else
     N = M - omega*A;                      % N = (1-w)D-wR
 end
 
-res_vec = zeros(1,50000);
+errs = zeros(1,50000);
 iter = 1;
 u = u0;
-res = norm(f - A*u);
-res_vec(1) = res;
+err = norm(u0 - uexact);
+errs(1) = err;
 
-while iter < 50000 && res > tol
+while iter < 50000 && err > tol
     u = M\(N*u + f);
-    res = norm(f - A*u);
+    err = norm(u - uexact);
     iter = iter + 1;
-    res_vec(iter) = res;
+    errs(iter) = err;
 end
 
-res_vec = res_vec(1:iter);
+errs = errs(1:iter);
