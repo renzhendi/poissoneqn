@@ -3,7 +3,7 @@
 %
 % Note: stopping criteria based on 2-norm err, not res.
 
-function [x,iter,res_vec] = cg(A, b, x0, tol)
+function [x,iter,res_vec] = cg(A,b,x0,tol)
 
 res_vec = zeros(1,50000);
 iter = 1;

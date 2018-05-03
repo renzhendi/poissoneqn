@@ -10,7 +10,7 @@ iter = 1;
 res = norm(b - A*u);
 res_vec(iter) = res;
 
-while iter<10000 && res>tol
+while iter < 50000 && res>tol
     u = vcycle(A, b, u);
     res = norm(b - A*u);
     iter = iter+1;

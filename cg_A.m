@@ -3,33 +3,31 @@
 %
 % Note: stopping criteria based on 2-norm err, not res.
 
-function [x,iter,errs,errsA,res] = cg_reserr(A, b, x0, xexact, tol)
+function [x,iter,errA,res_vec] = cg_A(A,b,x0,tol)
 
-res = zeros(1,1);
-errsA = res;
-errs = res;
+res_vec = zeros(1,50000);
+errA = res_vec;
 iter = 1;
+xexact = A\b;
 x = x0;
 
 r = b - A*x0;
-res(1) = norm(r);
+res = norm(r);
+res_vec(1) = res;
 e = x0 - xexact;
-errsA(1) = sqrt(e'*A*e);
-err = norm(e);
-errs(1) = err;
+errA(1) = sqrt(e'*A*e);
 p = r;
 
-while iter < 50000 && err > tol
+while iter < 50000 && res > tol
     alpha = (p'*r)/(p'*A*p);
     x = x + alpha*p;
     r = b - A*x;
     beta = -(p'*A*r)/(p'*A*p);
     p = r + beta*p;
     e = x - xexact;
+    res = norm(r);
     
     iter = iter + 1;
-    res(iter) = norm(r);
-    errsA(iter) = sqrt(e'*A*e);
-    err = norm(e);
-    errs(iter) = err;
+    errA(iter) = sqrt(e'*A*e);
+    res_vec(iter) = res;
 end

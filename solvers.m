@@ -1,10 +1,17 @@
-% This function solves Au=f and returns u, run time, and number of iterations.
+% This function solves Au=f and returns
+% u, solution;
+% t, run time;
+% iter, number of iterations;
+% res_vec, vector of residuals;
+% M & N, iteration matrices if choosing splitting methods.
 %
 % solverIndex:
 % 0 - backslash '\'
 % 1 - Jacobi and relaxed Jacobi
 % 2 - Gauss-Seidel and SOR
 % 3 - SSOR
+% 4 - CG
+% 5 - Multigrid
 %
 % timingBoolean:
 % 0 - no timer
@@ -15,7 +22,7 @@
 % 1 - ones
 % 2 - rand
 
-function [u,t,iter,errs,M,N] = solvers(A, f, solverIndex, timingBoolean, initGuessType, relaxation, tol)
+function [u,t,iter,res_vec,M,N] = solvers(A,f,solverIndex,timingBoolean,initGuessType,relaxation,tol)
 
 if nargin < 7
     tol = 10^(-8);
@@ -42,9 +49,10 @@ if solverIndex > 0
             u0 = rand(size(f));
     end
 end
-uexact = A\f;
 
 if timingBoolean                               % launch timer
+    M = -1;                                    % does record iter mat in timing mode
+    N = -1;
     tvec = zeros(1,10);                        % 10 time slots
     switch solverIndex
         case 0                                 % backslash '\'
@@ -54,29 +62,35 @@ if timingBoolean                               % launch timer
                 tvec(i) = toc;                 % cumulative time at the end of each iter
             end
             iter = 1;                          % '\' is not iterative
-            errs = 0;                          % '\' yields accurate u
+            res_vec = 0;                          % '\' yields accurate u
         case 1                                 % Jacobi
             tic;
             for i = 1:10
-                [u,iter,errs] = jacobi(A, f, u0, uexact, relaxation, tol);
+                [u,iter,res_vec] = jacobi(A, f, u0, relaxation, tol);
                 tvec(i) = toc;
             end
         case 2
             tic;
             for i = 1:10
-                [u,iter,errs] = gaussseidel(A, f, u0, uexact, relaxation, tol);
+                [u,iter,res_vec] = gaussseidel(A, f, u0, relaxation, tol);
                 tvec(i) = toc;
             end
         case 3
             tic;
             for i = 1:10
-                [u,iter,errs] = ssor(A, f, u0, uexact, relaxation, tol);
+                [u,iter,res_vec] = ssor(A, f, u0, relaxation, tol);
                 tvec(i) = toc;
             end
         case 4
             tic;
             for i = 1:10
-                [u,iter,errs] = cg(A, f, u0, uexact, relaxation, tol);
+                [u,iter,res_vec] = cg(A, f, u0, tol);
+                tvec(i) = toc;
+            end
+        case 5
+            tic;
+            for i = 1:10
+                [u,iter,res_vec] = multigrid(A, f, u0, tol);
                 tvec(i) = toc;
             end
     end
@@ -88,12 +102,20 @@ else                                           % otherwise no timing
         case 0
             u = A\f;
             iter = 1;
-            errs = 0;
+            res_vec = 0;
         case 1
-            [u,iter,errs,M,N] = jacobi(A, f, u0, uexact, relaxation, tol);
+            [u,iter,res_vec,M,N] = jacobi(A, f, u0, relaxation, tol);
         case 2
-            [u,iter,errs,M,N] = gaussseidel(A, f, u0, uexact, relaxation, tol);
+            [u,iter,res_vec,M,N] = gaussseidel(A, f, u0, relaxation, tol);
         case 3
-            [u,iter,errs,M,N] = ssor(A, f, u0, uexact, relaxation, tol);
+            [u,iter,res_vec,M,N] = ssor(A, f, u0, relaxation, tol);
+        case 4
+            [u,iter,res_vec] = cg(A, f, u0, tol);
+            M = -1;
+            N = -1;
+        case 5
+            [u,iter,res_vec] = multigrid(A, f, u0, tol);
+            M = -1;
+            N = -1;
     end
 end
