@@ -5,7 +5,7 @@
 
 function [x,iter,errA,res_vec] = cg_A(A,b,x0,tol)
 
-res_vec = zeros(1,50000);
+res_vec = zeros(1,1);
 errA = res_vec;
 iter = 1;
 xexact = A\b;
@@ -31,3 +31,5 @@ while iter < 50000 && res > tol
     errA(iter) = sqrt(e'*A*e);
     res_vec(iter) = res;
 end
+
+res_vec = res_vec(1:iter);

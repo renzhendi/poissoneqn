@@ -15,13 +15,19 @@ savePlotBoolean = 0;
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 100;                      % number of intervals in x direction
-M = 100;                      % number of intervals in y direction
+N = 50;                      % number of intervals in x direction
+M = 50;                      % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
+E_name = sprintf('evalA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
     load(A_name);
 else
     A = createA(M,N);
+end
+if exist(E_name,'file') == 2
+    load(E_name);
+else
+    evals = createE(A,M,N);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -48,7 +54,6 @@ iter2_vec = 0:iter2-1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % theoretical error bound %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-evals = abs(eig(A));
 lambda1 = max(evals);
 lambda2 = min(evals);
 k = lambda1/lambda2;
@@ -64,13 +69,13 @@ plot(iter1_vec,log(errA1(1:end)));
 hold on
 plot(iter1_vec,log(errs1_bound))
 title(sprintf('Eqn1 [%s, u%d]: M=%d, N=%d, iter=%d, kappa=%0.4f',algName,initGuessType,M,N,iter1,k));
-xlabel('iteration'); ylabel('A-norm(error)');
+xlabel('iteration'); ylabel('log[A-norm(err)]');
 subplot(2,1,2)
 plot(iter2_vec,log(errA2(1:end)));
 hold on
 plot(iter2_vec,log(errs2_bound));
 title(sprintf('Eqn2 [%s, u%d]: M=%d, N=%d, iter=%d, kappa=%0.4f',algName,initGuessType,M,N,iter2,k));
-xlabel('iteration'); ylabel('A-norm(error)');
+xlabel('iteration'); ylabel('log[A-norm(err)]');
 if savePlotBoolean
     print(sprintf('iter_mtd_plots/convergence_%s_u%d_m%d_n%d.png',algName,initGuessType,M,N),'-dpng');
     close;
