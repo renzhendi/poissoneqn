@@ -7,17 +7,17 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-timingBoolean = 0;
+timingBoolean = 1;
 savePlotBoolean = 0;
 tol = 10^(-8);
 
 f1=@(x,y)13*pi^2*sin(2*pi*x).*sin(3*pi*y);
 f2=@(x,y)-(x-1).^3.*(42*x.^2-24*x+2).*y.*(y-1)-2*x.^2.*(x-1).^5;
 
-solverIndex_list = [0,4];%[0, 1, 2, 3];
-N_list = [50 100];
-M_list = [50 100];
-initGuessType_list = [0, 1, 2];
+solverIndex_list = [1,2,3,4];
+N_list = [130];%[50 100];
+M_list = [130];%[50 100];
+initGuessType_list = [0,1,2];
 relaxation_list = [0.75, 0.5, 1, 1.5]; % Jacobi 0.75 0.5 1; SOR/SSOR 0.5 1 1.5
 
 for n = 1:length(N_list)        % for loop 1: N

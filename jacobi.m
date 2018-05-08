@@ -12,13 +12,13 @@ else
     N = (1-theta)*M+theta*(M-A);     % N = (1-t)D-t(L+R)
 end
 
-res_vec = zeros(1,50000);
+res_vec = zeros(1,10000);
 iter = 1;
 u = u0;
 res = norm(f - A*u);
 res_vec(1) = res;
 
-while iter < 50000 && res > tol
+while iter < 10000 && res > tol
     u = M\(N*u + f);
     res = norm(f - A*u);
     iter = iter + 1;

@@ -5,16 +5,15 @@
 
 function [x,iter,res_vec] = cg(A,b,x0,tol)
 
-res_vec = zeros(1,50000);
+res_vec = zeros(1,10000);
 iter = 1;
 x = x0;
-
 r = b - A*x0;
 res = norm(r);
 res_vec(1) = res;
 p = r;
 
-while iter < 50000 && res > tol
+while iter < 10000 && res > tol
     alpha = (p'*r)/(p'*A*p);
     x = x + alpha*p;
     r = b - A*x;

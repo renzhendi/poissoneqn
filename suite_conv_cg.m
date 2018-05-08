@@ -8,15 +8,14 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 algName = 'CG';
-initGuessType = 0;
+initGuessType = 2;
 tol = 10^(-8);
-savePlotBoolean = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 50;                      % number of intervals in x direction
-M = 50;                      % number of intervals in y direction
+N = 65;                      % number of intervals in x direction
+M = 65;                      % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 E_name = sprintf('evalA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
@@ -63,20 +62,18 @@ errs2_bound = 2*errA2(1)*((sqrt(k)-1)/(sqrt(k)+1)).^iter2_vec;
 %%%%%%%%%%%%%%%%
 % verification %
 %%%%%%%%%%%%%%%%
-figure
-subplot(2,1,1)
-plot(iter1_vec,log(errA1(1:end)));
+figure(1)
+plot(iter1_vec,log(errA1(1:end)),'LineWidth',2);
 hold on
-plot(iter1_vec,log(errs1_bound))
-title(sprintf('Eqn1 [%s, u%d]: M=%d, N=%d, iter=%d, kappa=%0.4f',algName,initGuessType,M,N,iter1,k));
+plot(iter1_vec,log(errs1_bound),'LineWidth',2)
+title(sprintf('Problem 1 (%s, u%d, kappa=%0.4f)',algName,initGuessType,k));
 xlabel('iteration'); ylabel('log[A-norm(err)]');
-subplot(2,1,2)
-plot(iter2_vec,log(errA2(1:end)));
+legend('Measured error','Theoretical bound');
+
+figure(2)
+plot(iter2_vec,log(errA2(1:end)),'LineWidth',2);
 hold on
-plot(iter2_vec,log(errs2_bound));
-title(sprintf('Eqn2 [%s, u%d]: M=%d, N=%d, iter=%d, kappa=%0.4f',algName,initGuessType,M,N,iter2,k));
+plot(iter2_vec,log(errs2_bound),'LineWidth',2);
+title(sprintf('Problem 2 (%s, u%d, kappa=%0.4f)',algName,initGuessType,k));
 xlabel('iteration'); ylabel('log[A-norm(err)]');
-if savePlotBoolean
-    print(sprintf('iter_mtd_plots/convergence_%s_u%d_m%d_n%d.png',algName,initGuessType,M,N),'-dpng');
-    close;
-end
+legend('Measured error','Theoretical bound');

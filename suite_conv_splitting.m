@@ -7,12 +7,13 @@ addpath('C:/Users/Œ‚ﬁ»ïF/Documents/MATLAB/MMSC/poissoneqn/A');
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % general initialization %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-solverIndex = 3;             % input 1, 2, 3 only
-% timingBoolean is 0 by default
-initGuessType = 1;
-relaxation = 1.5;
+N = 65;                      % number of intervals in x direction
+M = 65;                      % number of intervals in y direction
+solverIndex = 1;             % input 1, 2, 3 only
+initGuessType = 2;
+relaxation = 1;
 tol = 10^(-8);
-savePlotBoolean = 0;
+
 switch solverIndex
     case 0
         algName = 'backslash';
@@ -20,23 +21,21 @@ switch solverIndex
         if relaxation == 1
             algName = 'Jacobi';
         else
-            algName = sprintf('rJCB(%0.1f)',relaxation);
+            algName = 'rJacobi(2/3)';
         end
     case 2
         if relaxation == 1
             algName = 'GaussSeidel';
         else
-            algName = sprintf('SOR(%0.1f)',relaxation);
+            algName = 'SOR(3/2)';
         end
     case 3
-        algName = sprintf('SSOR(%0.1f)',relaxation);
+        algName = 'SSOR(3/2)';
 end
 
 %%%%%%%%%%%%%%%%%%%%%%
 % LHS initialization %
 %%%%%%%%%%%%%%%%%%%%%%
-N = 50;                      % number of intervals in x direction
-M = 50;                      % number of intervals in y direction
 A_name = sprintf('matA_m%d_n%d.mat',M,N);
 if exist(A_name,'file') == 2
     load(A_name);
@@ -59,9 +58,9 @@ f2vec = f2mat(:);                       % (N-1)(M-1) vector
 %%%%%%%%%%%%%%%%%%
 % numerical soln %
 %%%%%%%%%%%%%%%%%%
-[~,t1,iter1,errs1,M_mat,N_mat] = solvers(A, f1vec, solverIndex, 0, initGuessType, relaxation, tol);
+[~,t1,iter1,errs1,M_mat,N_mat] = solvers_err(A, f1vec, solverIndex, 0, initGuessType, relaxation, tol);
 iter1_vec = 1:iter1;
-[~,t2,iter2,errs2] = solvers(A, f2vec, solverIndex, 0, initGuessType, relaxation, tol);
+[~,t2,iter2,errs2] = solvers_err(A, f2vec, solverIndex, 0, initGuessType, relaxation, tol);
 iter2_vec = 1:iter2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,26 +68,24 @@ iter2_vec = 1:iter2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 evals = abs(eigs(M_mat\N_mat));
 lambda = max(evals);
-errs1_bound = log(lambda)*iter1_vec;
-errs2_bound = log(lambda)*iter2_vec;
+errs1_bound = log(lambda)*iter1_vec + max(0,log(errs1(1)));
+errs2_bound = log(lambda)*iter2_vec + max(0,log(errs2(1)));
 
 %%%%%%%%%%%%%%%%
 % verification %
 %%%%%%%%%%%%%%%%
-figure
-subplot(2,1,1)
-plot(iter1_vec,log(errs1));
+figure(1)
+plot(iter1_vec,log(errs1),'LineWidth',2);
 hold on
-plot(iter1_vec,errs1_bound)
-title(sprintf('Eqn1 [%s, u%d]: M=%d, N=%d, iter=%d, sr=%0.4f',algName,initGuessType,M,N,iter1,lambda));
-xlabel('iteration'); ylabel('log(norm(error))');
-subplot(2,1,2)
-plot(iter2_vec,log(errs2));
+plot(iter1_vec,errs1_bound,'LineWidth',2);
+title(sprintf('Problem 1 (%s, u%d, lambda=%0.4f)',algName,initGuessType,lambda));
+xlabel('iteration'); ylabel('log[norm(err)]');
+legend('Measured error','Theoretical bound');
+
+figure(2)
+plot(iter2_vec,log(errs2),'LineWidth',2);
 hold on
-plot(iter2_vec,errs2_bound)
-title(sprintf('Eqn2 [%s, u%d]: M=%d, N=%d, iter=%d, sr=%0.4f',algName,initGuessType,M,N,iter2,lambda));
-xlabel('iteration'); ylabel('log(norm(error))');
-if savePlotBoolean
-    print(sprintf('iter_mtd_plots/convergence_%s_u%d_m%d_n%d.png',algName,initGuessType,M,N),'-dpng');
-    close;
-end
+plot(iter2_vec,errs2_bound,'LineWidth',2);
+title(sprintf('Problem 2 (%s, u%d, lambda=%0.4f)',algName,initGuessType,lambda));
+xlabel('iteration'); ylabel('log[norm(err)]');
+legend('Measured error','Theoretical bound');

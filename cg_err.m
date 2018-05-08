@@ -3,9 +3,9 @@
 %
 % Note: stopping criteria based on 2-norm err, not res.
 
-function [x,iter,errs] = cg_err(A, b, x0, xexact, tol)
+function [x,iter,errs] = cg_err(A,b,x0,xexact,tol)
 
-errs = zeros(1,50000);
+errs = zeros(1,10000);
 iter = 1;
 x = x0;
 
@@ -14,7 +14,7 @@ err = norm(x0 - xexact);
 errs(1) = err;
 p = r;
 
-while iter < 50000 && err > tol
+while iter < 10000 && err > tol
     alpha = (p'*r)/(p'*A*p);
     x = x + alpha*p;
     r = b - A*x;

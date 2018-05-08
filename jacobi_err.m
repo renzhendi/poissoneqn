@@ -12,13 +12,13 @@ else
     N = (1-theta)*M+theta*(M-A);     % N = (1-t)D-t(L+R)
 end
 
-errs = zeros(1,50000);
+errs = zeros(1,10000);
 iter = 1;
 u = u0;
 err = norm(u0 - uexact);
 errs(1) = err;
 
-while iter < 50000 && err > tol
+while iter < 10000 && err > tol
     u = M\(N*u + f);
     err = norm(u - uexact);
     iter = iter + 1;
